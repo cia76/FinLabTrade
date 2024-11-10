@@ -50,7 +50,6 @@ def do_transforms(transforms, df, index):
         else:  # Если параметров нет
             cmd += ')'  # то закрываем скобку функции после колонок
         cmd += ')'  # Закрываем скобку функции _set_value
-        # print(cmd)  # Для отладки
         exec(cmd)  # Запускаем функцию _set_value
 
 def process_history(transforms):
@@ -63,8 +62,8 @@ def process_history(transforms):
                      index_col='datetime')  # Индексом будет колонка datetime  # Дневки тикера
     for transform in transforms:  # Пробегаемся по всем преобразованиям
         df[transform[0].__name__] = np.nan  # Преобразования дадут нам новые столбцы в DataFrame. Пока значения их не определены
-    for index, row in df.iterrows():  # Пробегаемся по каждой строке
-        do_transforms(transforms, df, index)  # Рассчитываем значения индикаторов
+    for index in df.index:  # Пробегаемся по каждой строке
+        do_transforms(transforms, df[:index], index)  # Рассчитываем значения индикаторов
     print(df)  # Для отладки
 
 def new_bars_emulation(transforms):
@@ -90,6 +89,6 @@ if __name__ == '__main__':  # Точка входа при запуске это
     transforms = ((hl2, ('high', 'low')),  # Средняя цена по High и Low
                   (sma, 'hl2', 26))  # Среднюю цену сглаживаем SMA
     dt_now = datetime.now()  # Текущее время для замера времени исполнения скрипта
-    new_bars_emulation(transforms)  # Эмуляция прихода новых бар 8.21 с
-    # process_history(transforms)  # История 2.15 с
+    # new_bars_emulation(transforms)  # Эмуляция прихода новых бар 8.21 с
+    process_history(transforms)  # История 2.15 с
     print(datetime.now() - dt_now)  # Время работы скрипта
